@@ -1,1 +1,4 @@
 .idea/
+
+# Infraestructura local
+docker-compose.yml

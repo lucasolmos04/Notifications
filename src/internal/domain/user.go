@@ -1,5 +1,12 @@
 package domain
 
+import "uuid"
+
 type User struct {
-	Name string
+	ID           uuid.UUID
+	Name         string
+	LastName     string
+	Email        string
+	PasswordHash string
+	IsActive     bool
 }
