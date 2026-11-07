@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	_ "github.com/lib/pq" // registra el driver "postgres"
+	_ "github.com/lib/pq" //driver "postgres"
 )
 
 func NewPostgresConnection(host, port, user, password, dbname string) (*sql.DB, error) {
-	// Formamos la cadena de conexión (DSN)
+	// Create connection chain (DSN)
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
 
@@ -18,12 +18,12 @@ func NewPostgresConnection(host, port, user, password, dbname string) (*sql.DB, 
 		return nil, err
 	}
 
-	// Configuraciones de optimización del pool de conexiones
+	// Configurations of pool connections
 	db.SetMaxOpenConns(25)
 	db.SetMaxIdleConns(25)
 	db.SetConnMaxLifetime(5 * time.Minute)
 
-	// Aseguramos que la base de datos realmente responda antes de continuar
+	// Database response before continue?
 	if err := db.Ping(); err != nil {
 		return nil, err
 	}

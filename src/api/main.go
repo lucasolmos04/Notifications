@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fmt.Println("Welcome to main() function")
+	fmt.Println("Welcome to main() Notifications")
 
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
