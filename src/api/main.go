@@ -24,7 +24,7 @@ func main() {
 
 	defer db.Close()
 
-	log.Printf("Connection database successful")
+	fmt.Println("\033[32mConnection database successful\033[0m")
 
 	// Inject Dependencies
 	userRepo := repository.NewSQLUserRepository(db)

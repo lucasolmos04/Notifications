@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"time"
+
+	_ "github.com/lib/pq" // registra el driver "postgres"
 )
 
 func NewPostgresConnection(host, port, user, password, dbname string) (*sql.DB, error) {
