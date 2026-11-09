@@ -2,6 +2,7 @@ package repository
 
 import (
 	"Notifications/src/internal/domain"
+	"Notifications/src/internal/service"
 	"context"
 	"database/sql"
 	"time"
@@ -12,7 +13,7 @@ type SQLNotificationRepository struct {
 	db *sql.DB
 }
 
-func NewSQLNotificationRepository(db *sql.DB) domain.NotificationRepository {
+func NewSQLNotificationRepository(db *sql.DB) service.NotificationRepository {
 	return &SQLNotificationRepository{db: db}
 }
 

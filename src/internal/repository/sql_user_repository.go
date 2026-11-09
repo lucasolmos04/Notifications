@@ -2,6 +2,7 @@ package repository
 
 import (
 	"Notifications/src/internal/domain"
+	"Notifications/src/internal/service"
 	"context"
 	"database/sql"
 	"uuid"
@@ -42,7 +43,7 @@ func fromDomain(u *domain.User) *UserDB {
 	}
 }
 
-func NewSQLUserRepository(db *sql.DB) domain.UserRepository {
+func NewSQLUserRepository(db *sql.DB) service.UserRepository {
 	return &SQLUserRepository{db: db}
 }
 
