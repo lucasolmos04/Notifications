@@ -5,6 +5,7 @@ import (
 	"Notifications/src/internal/service"
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 	"uuid"
 )
@@ -39,7 +40,7 @@ func (s SQLNotificationRepository) Update(ctx context.Context, notification doma
 		return err
 	}
 	if rowsAffected == 0 {
-		return sql.ErrNoRows
+		return service.ErrNotFound
 	}
 	return nil
 }
@@ -55,9 +56,22 @@ func (s SQLNotificationRepository) Delete(ctx context.Context, id uuid.UUID) err
 		return err
 	}
 	if rowsAffected == 0 {
-		return sql.ErrNoRows
+		return service.ErrNotFound
 	}
 	return nil
+}
+
+func (s SQLNotificationRepository) FindByID(ctx context.Context, id uuid.UUID) (*domain.Notification, error) {
+	row := s.db.QueryRowContext(ctx, `SELECT id, user_id, title, content, channel, status, sent_at, create_at, update_at FROM notification WHERE id = $1`, id.String())
+
+	var n NotificationDB
+	if err := row.Scan(&n.ID, &n.UserID, &n.Title, &n.Content, &n.Channel, &n.Status, &n.SentAt, &n.CreateAt, &n.UpdateAt); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, service.ErrNotFound
+		}
+		return nil, err
+	}
+	return n.toDomain(), nil
 }
 
 func (s SQLNotificationRepository) FindByUserId(ctx context.Context, userId uuid.UUID) ([]domain.Notification, error) {
