@@ -2,6 +2,7 @@ package main
 
 import (
 	"Notifications/src/internal/auth"
+	"Notifications/src/internal/controller"
 	"Notifications/src/internal/domain"
 	"Notifications/src/internal/infrastructure"
 	"Notifications/src/internal/repository"
@@ -9,6 +10,7 @@ import (
 	"Notifications/src/internal/service"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"time"
 
@@ -60,8 +62,19 @@ func main() {
 		domain.ChannelPush:  &sender.PushSender{},
 	}
 	notificationService := service.NewNotificationService(notificationRepo, userRepo, senders)
+	_ = notificationService // TODO: wire up notification handlers once the auth middleware exists
 
-	// TODO: wire up controllers/HTTP router using authenticationService and notificationService
-	_ = authenticationService
-	_ = notificationService
+	// HTTP
+	authHandler := controller.NewAuthHandler(authenticationService)
+	router := controller.NewRouter(authHandler)
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	fmt.Printf("listening on :%s\n", port)
+	if err := http.ListenAndServe(":"+port, router); err != nil {
+		log.Fatalf("server error: %v", err)
+	}
 }
