@@ -5,6 +5,7 @@ import (
 	"Notifications/src/internal/service"
 	"context"
 	"database/sql"
+	"errors"
 	"uuid"
 )
 
@@ -58,6 +59,9 @@ func (r *SQLUserRepository) FindByEmail(ctx context.Context, email string) (*dom
 
 	var u UserDB
 	if err := row.Scan(&u.ID, &u.Name, &u.LastName, &u.Email, &u.PhoneNumber, &u.DeviceToken, &u.PasswordHash, &u.IsActive); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, service.ErrNotFound
+		}
 		return nil, err
 	}
 	return u.toDomain(), nil
@@ -68,6 +72,9 @@ func (r *SQLUserRepository) FindByID(ctx context.Context, id uuid.UUID) (*domain
 
 	var u UserDB
 	if err := row.Scan(&u.ID, &u.Name, &u.LastName, &u.Email, &u.PhoneNumber, &u.DeviceToken, &u.PasswordHash, &u.IsActive); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, service.ErrNotFound
+		}
 		return nil, err
 	}
 	return u.toDomain(), nil

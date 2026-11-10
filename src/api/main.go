@@ -6,10 +6,16 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	fmt.Println("Welcome to main() Notifications")
+
+	if err := godotenv.Load(); err != nil {
+		log.Println("no .env file found, reading config from the environment")
+	}
 
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")

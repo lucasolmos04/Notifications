@@ -2,3 +2,6 @@
 
 # Infraestructura local
 docker-compose.yml
+
+# Secretos locales (temporal, ver nota en el PR/README sobre manejo de secrets)
+.env
