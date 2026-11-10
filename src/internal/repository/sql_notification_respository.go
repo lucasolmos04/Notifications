@@ -17,24 +17,70 @@ func NewSQLNotificationRepository(db *sql.DB) service.NotificationRepository {
 	return &SQLNotificationRepository{db: db}
 }
 
-func (S SQLNotificationRepository) Create(ctx context.Context, notification domain.Notification) error {
-	//TODO implement me
-	panic("implement me")
+func (s SQLNotificationRepository) Create(ctx context.Context, notification domain.Notification) error {
+	n := fromDomainNotification(&notification)
+	_, err := s.db.ExecContext(ctx,
+		`INSERT INTO notification (id, user_id, title, content, channel, status, sent_at, create_at, update_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+		n.ID, n.UserID, n.Title, n.Content, n.Channel, n.Status, n.SentAt, n.CreateAt, n.UpdateAt)
+	return err
 }
 
-func (S SQLNotificationRepository) Update(ctx context.Context, notification domain.Notification) error {
-	//TODO implement me
-	panic("implement me")
+func (s SQLNotificationRepository) Update(ctx context.Context, notification domain.Notification) error {
+	n := fromDomainNotification(&notification)
+	result, err := s.db.ExecContext(ctx,
+		`UPDATE notification SET title=$1, content=$2, channel=$3, status=$4, sent_at=$5, update_at=$6 WHERE id=$7`,
+		n.Title, n.Content, n.Channel, n.Status, n.SentAt, n.UpdateAt, n.ID)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
 }
 
-func (S SQLNotificationRepository) Delete(ctx context.Context, id uuid.UUID) error {
-	//TODO implement me
-	panic("implement me")
+func (s SQLNotificationRepository) Delete(ctx context.Context, id uuid.UUID) error {
+	result, err := s.db.ExecContext(ctx, `DELETE FROM notification WHERE id = $1`, id.String())
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
 }
 
-func (S SQLNotificationRepository) FindByUserId(ctx context.Context, userId uuid.UUID) ([]domain.Notification, error) {
-	//TODO implement me
-	panic("implement me")
+func (s SQLNotificationRepository) FindByUserId(ctx context.Context, userId uuid.UUID) ([]domain.Notification, error) {
+	rows, err := s.db.QueryContext(ctx, `SELECT id, user_id, title, content, channel, status, sent_at, create_at, update_at FROM notification WHERE user_id = $1`, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var notifications []domain.Notification
+	for rows.Next() {
+		var n NotificationDB
+		if err := rows.Scan(&n.ID, &n.UserID, &n.Title, &n.Content, &n.Channel, &n.Status, &n.SentAt, &n.CreateAt, &n.UpdateAt); err != nil {
+			return nil, err
+		}
+		notifications = append(notifications, *n.toDomain())
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return notifications, nil
 }
 
 type NotificationDB struct {
