@@ -7,5 +7,5 @@ import (
 
 type UserRepository interface {
 	FindByEmail(ctx context.Context, email string) (*domain.User, error)
-	Save(ctx context.Context, user *domain.User) error
+	Create(ctx context.Context, user *domain.User) error
 }

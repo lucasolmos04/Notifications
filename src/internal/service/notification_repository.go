@@ -7,8 +7,8 @@ import (
 )
 
 type NotificationRepository interface {
-	Create(ctx context.Context, notification domain.Notification)
-	Update(ctx context.Context, notification domain.Notification)
-	Delete(ctx context.Context, id uuid.UUID)
-	FindByUserId(ctx context.Context, userId uuid.UUID)
+	Create(ctx context.Context, notification domain.Notification) error
+	Update(ctx context.Context, notification domain.Notification) error
+	Delete(ctx context.Context, id uuid.UUID) error
+	FindByUserId(ctx context.Context, userId uuid.UUID) ([]domain.Notification, error)
 }

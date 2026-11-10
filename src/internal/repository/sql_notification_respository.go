@@ -17,22 +17,22 @@ func NewSQLNotificationRepository(db *sql.DB) service.NotificationRepository {
 	return &SQLNotificationRepository{db: db}
 }
 
-func (S SQLNotificationRepository) Create(ctx context.Context, notification domain.Notification) {
+func (S SQLNotificationRepository) Create(ctx context.Context, notification domain.Notification) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (S SQLNotificationRepository) Update(ctx context.Context, notification domain.Notification) {
+func (S SQLNotificationRepository) Update(ctx context.Context, notification domain.Notification) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (S SQLNotificationRepository) Delete(ctx context.Context, id uuid.UUID) {
+func (S SQLNotificationRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (S SQLNotificationRepository) FindByUserId(ctx context.Context, userId uuid.UUID) {
+func (S SQLNotificationRepository) FindByUserId(ctx context.Context, userId uuid.UUID) ([]domain.Notification, error) {
 	//TODO implement me
 	panic("implement me")
 }

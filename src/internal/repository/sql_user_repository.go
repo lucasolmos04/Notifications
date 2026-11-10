@@ -57,7 +57,7 @@ func (r *SQLUserRepository) FindByEmail(ctx context.Context, email string) (*dom
 	return u.toDomain(), nil
 }
 
-func (r *SQLUserRepository) Save(ctx context.Context, user *domain.User) error {
+func (r *SQLUserRepository) Create(ctx context.Context, user *domain.User) error {
 	u := fromDomain(user)
 	_, err := r.db.ExecContext(ctx,
 		`INSERT INTO user (id, name, last_name, email, password_hash, is_active) VALUES ($1,$2,$3,$4,$5,$6)`,
