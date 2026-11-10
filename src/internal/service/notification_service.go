@@ -71,3 +71,43 @@ func (s *NotificationService) Create(ctx context.Context, req CreateNotification
 	}
 	return &notification, nil
 }
+
+func (s *NotificationService) ListByUser(ctx context.Context, userID uuid.UUID) ([]domain.Notification, error) {
+	return s.repo.FindByUserId(ctx, userID)
+}
+
+func (s *NotificationService) Update(ctx context.Context, userID uuid.UUID, notificationID uuid.UUID, req UpdateNotificationRequest) (*domain.Notification, error) {
+	if _, ok := s.senders[req.Channel]; !ok {
+		return nil, fmt.Errorf("unsupported channel: %s", req.Channel)
+	}
+
+	notification, err := s.repo.FindByID(ctx, notificationID)
+	if err != nil {
+		return nil, err
+	}
+	if notification.UserID != userID {
+		return nil, ErrNotFound
+	}
+
+	notification.Title = req.Title
+	notification.Content = req.Content
+	notification.Channel = req.Channel
+	notification.UpdateAt = time.Now()
+
+	if err := s.repo.Update(ctx, *notification); err != nil {
+		return nil, err
+	}
+	return notification, nil
+}
+
+func (s *NotificationService) Delete(ctx context.Context, userID uuid.UUID, notificationID uuid.UUID) error {
+	notification, err := s.repo.FindByID(ctx, notificationID)
+	if err != nil {
+		return err
+	}
+	if notification.UserID != userID {
+		return ErrNotFound
+	}
+
+	return s.repo.Delete(ctx, notificationID)
+}

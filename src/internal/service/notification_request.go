@@ -11,3 +11,9 @@ type CreateNotificationRequest struct {
 	Content string
 	Channel domain.Channel
 }
+
+type UpdateNotificationRequest struct {
+	Title   string
+	Content string
+	Channel domain.Channel
+}
