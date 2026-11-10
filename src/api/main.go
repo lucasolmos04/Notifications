@@ -62,11 +62,11 @@ func main() {
 		domain.ChannelPush:  &sender.PushSender{},
 	}
 	notificationService := service.NewNotificationService(notificationRepo, userRepo, senders)
-	_ = notificationService // TODO: wire up notification handlers once the auth middleware exists
 
 	// HTTP
 	authHandler := controller.NewAuthHandler(authenticationService)
-	router := controller.NewRouter(authHandler)
+	notificationHandler := controller.NewNotificationHandler(notificationService)
+	router := controller.NewRouter(authenticationService, authHandler, notificationHandler)
 
 	port := os.Getenv("PORT")
 	if port == "" {

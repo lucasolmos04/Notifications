@@ -27,7 +27,7 @@ func NewNotificationService(repo NotificationRepository, userRepo UserRepository
 func (s *NotificationService) Create(ctx context.Context, req CreateNotificationRequest) (*domain.Notification, error) {
 	sender, ok := s.senders[req.Channel]
 	if !ok {
-		return nil, fmt.Errorf("unsupported channel: %s", req.Channel)
+		return nil, fmt.Errorf("%w: %s", ErrUnsupportedChannel, req.Channel)
 	}
 
 	user, err := s.userRepo.FindByID(ctx, req.UserID)
@@ -78,7 +78,7 @@ func (s *NotificationService) ListByUser(ctx context.Context, userID uuid.UUID) 
 
 func (s *NotificationService) Update(ctx context.Context, userID uuid.UUID, notificationID uuid.UUID, req UpdateNotificationRequest) (*domain.Notification, error) {
 	if _, ok := s.senders[req.Channel]; !ok {
-		return nil, fmt.Errorf("unsupported channel: %s", req.Channel)
+		return nil, fmt.Errorf("%w: %s", ErrUnsupportedChannel, req.Channel)
 	}
 
 	notification, err := s.repo.FindByID(ctx, notificationID)
