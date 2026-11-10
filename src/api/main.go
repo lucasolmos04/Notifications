@@ -1,14 +1,21 @@
 package main
 
 import (
+	"Notifications/src/internal/auth"
+	"Notifications/src/internal/domain"
 	"Notifications/src/internal/infrastructure"
 	"Notifications/src/internal/repository"
+	"Notifications/src/internal/sender"
+	"Notifications/src/internal/service"
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 )
+
+const tokenTTL = 24 * time.Hour
 
 func main() {
 	fmt.Println("Welcome to main() Notifications")
@@ -32,8 +39,29 @@ func main() {
 
 	fmt.Println("\033[32mConnection database successful\033[0m")
 
-	// Inject Dependencies
-	userRepo := repository.NewSQLUserRepository(db)
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		log.Fatal("JWT_SECRET is not set")
+	}
 
-	_ = userRepo
+	// Repositories
+	userRepo := repository.NewSQLUserRepository(db)
+	notificationRepo := repository.NewSQLNotificationRepository(db)
+
+	// Auth
+	passwordEncoder := auth.NewBcryptPasswordEncoder()
+	tokenProvider := auth.NewJWTTokenProvider(jwtSecret, tokenTTL)
+	authenticationService := service.NewAuthenticationService(userRepo, passwordEncoder, tokenProvider)
+
+	// Notification senders, by channel
+	senders := service.SenderRegistry{
+		domain.ChannelEmail: &sender.EmailSender{},
+		domain.ChannelSMS:   &sender.SmsSender{},
+		domain.ChannelPush:  &sender.PushSender{},
+	}
+	notificationService := service.NewNotificationService(notificationRepo, userRepo, senders)
+
+	// TODO: wire up controllers/HTTP router using authenticationService and notificationService
+	_ = authenticationService
+	_ = notificationService
 }
