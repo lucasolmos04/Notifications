@@ -6,6 +6,8 @@ import (
 	"uuid"
 )
 
+//go:generate mockgen -source=notification_repository.go -destination=mocks/notification_repository_mock.go -package=mocks
+
 type NotificationRepository interface {
 	Create(ctx context.Context, notification domain.Notification) error
 	Update(ctx context.Context, notification domain.Notification) error

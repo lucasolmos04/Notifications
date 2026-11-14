@@ -12,6 +12,8 @@ type SenderResult struct {
 	Detail  string
 }
 
+//go:generate mockgen -source=notification_sender.go -destination=mocks/notification_sender_mock.go -package=mocks
+
 type NotificationSender interface {
 	Validate(ctx context.Context, notification domain.Notification, user domain.User) error
 	Send(ctx context.Context, notification domain.Notification, user domain.User) (*SenderResult, error)

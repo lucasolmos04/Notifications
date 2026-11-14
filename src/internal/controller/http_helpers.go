@@ -4,6 +4,7 @@ import (
 	"Notifications/src/internal/service"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 )
 
@@ -32,6 +33,7 @@ func writeServiceError(w http.ResponseWriter, err error) {
 	case errors.Is(err, service.ErrUnsupportedChannel):
 		writeError(w, http.StatusBadRequest, err.Error())
 	default:
+		log.Printf("unhandled service error: %v", err)
 		writeError(w, http.StatusInternalServerError, "internal server error")
 	}
 }

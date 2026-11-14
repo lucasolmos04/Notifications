@@ -13,10 +13,12 @@ var (
 )
 
 type RegisterRequest struct {
-	Name     string
-	LastName string
-	Email    string
-	Password string
+	Name        string
+	LastName    string
+	Email       string
+	Password    string
+	PhoneNumber string
+	DeviceToken string
 }
 
 type AuthenticationService struct {
@@ -52,6 +54,8 @@ func (s *AuthenticationService) Register(ctx context.Context, req RegisterReques
 		Name:         req.Name,
 		LastName:     req.LastName,
 		Email:        req.Email,
+		PhoneNumber:  req.PhoneNumber,
+		DeviceToken:  req.DeviceToken,
 		PasswordHash: passwordHash,
 		IsActive:     true,
 	}

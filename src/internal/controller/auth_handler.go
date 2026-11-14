@@ -16,25 +16,31 @@ func NewAuthHandler(authService *service.AuthenticationService) *AuthHandler {
 }
 
 type registerRequestDTO struct {
-	Name     string `json:"name"`
-	LastName string `json:"last_name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Name        string `json:"name"`
+	LastName    string `json:"last_name"`
+	Email       string `json:"email"`
+	Password    string `json:"password"`
+	PhoneNumber string `json:"phone_number"`
+	DeviceToken string `json:"device_token"`
 }
 
 type userResponseDTO struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	LastName string `json:"last_name"`
-	Email    string `json:"email"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	LastName    string `json:"last_name"`
+	Email       string `json:"email"`
+	PhoneNumber string `json:"phone_number"`
+	DeviceToken string `json:"device_token"`
 }
 
 func toUserResponseDTO(u *domain.User) userResponseDTO {
 	return userResponseDTO{
-		ID:       u.ID.String(),
-		Name:     u.Name,
-		LastName: u.LastName,
-		Email:    u.Email,
+		ID:          u.ID.String(),
+		Name:        u.Name,
+		LastName:    u.LastName,
+		Email:       u.Email,
+		PhoneNumber: u.PhoneNumber,
+		DeviceToken: u.DeviceToken,
 	}
 }
 
@@ -46,10 +52,12 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := h.authService.Register(r.Context(), service.RegisterRequest{
-		Name:     dto.Name,
-		LastName: dto.LastName,
-		Email:    dto.Email,
-		Password: dto.Password,
+		Name:        dto.Name,
+		LastName:    dto.LastName,
+		Email:       dto.Email,
+		Password:    dto.Password,
+		PhoneNumber: dto.PhoneNumber,
+		DeviceToken: dto.DeviceToken,
 	})
 	if err != nil {
 		writeServiceError(w, err)

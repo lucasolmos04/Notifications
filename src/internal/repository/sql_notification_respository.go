@@ -21,7 +21,7 @@ func NewSQLNotificationRepository(db *sql.DB) service.NotificationRepository {
 func (s SQLNotificationRepository) Create(ctx context.Context, notification domain.Notification) error {
 	n := fromDomainNotification(&notification)
 	_, err := s.db.ExecContext(ctx,
-		`INSERT INTO notification (id, user_id, title, content, channel, status, sent_at, create_at, update_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+		`INSERT INTO notification (id, user_id, title, content, channel, status, sent_at, created_at, updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
 		n.ID, n.UserID, n.Title, n.Content, n.Channel, n.Status, n.SentAt, n.CreateAt, n.UpdateAt)
 	return err
 }
@@ -29,7 +29,7 @@ func (s SQLNotificationRepository) Create(ctx context.Context, notification doma
 func (s SQLNotificationRepository) Update(ctx context.Context, notification domain.Notification) error {
 	n := fromDomainNotification(&notification)
 	result, err := s.db.ExecContext(ctx,
-		`UPDATE notification SET title=$1, content=$2, channel=$3, status=$4, sent_at=$5, update_at=$6 WHERE id=$7`,
+		`UPDATE notification SET title=$1, content=$2, channel=$3, status=$4, sent_at=$5, updated_at=$6 WHERE id=$7`,
 		n.Title, n.Content, n.Channel, n.Status, n.SentAt, n.UpdateAt, n.ID)
 	if err != nil {
 		return err
@@ -62,7 +62,7 @@ func (s SQLNotificationRepository) Delete(ctx context.Context, id uuid.UUID) err
 }
 
 func (s SQLNotificationRepository) FindByID(ctx context.Context, id uuid.UUID) (*domain.Notification, error) {
-	row := s.db.QueryRowContext(ctx, `SELECT id, user_id, title, content, channel, status, sent_at, create_at, update_at FROM notification WHERE id = $1`, id.String())
+	row := s.db.QueryRowContext(ctx, `SELECT id, user_id, title, content, channel, status, sent_at, created_at, updated_at FROM notification WHERE id = $1`, id.String())
 
 	var n NotificationDB
 	if err := row.Scan(&n.ID, &n.UserID, &n.Title, &n.Content, &n.Channel, &n.Status, &n.SentAt, &n.CreateAt, &n.UpdateAt); err != nil {
@@ -75,7 +75,7 @@ func (s SQLNotificationRepository) FindByID(ctx context.Context, id uuid.UUID) (
 }
 
 func (s SQLNotificationRepository) FindByUserId(ctx context.Context, userId uuid.UUID) ([]domain.Notification, error) {
-	rows, err := s.db.QueryContext(ctx, `SELECT id, user_id, title, content, channel, status, sent_at, create_at, update_at FROM notification WHERE user_id = $1`, userId)
+	rows, err := s.db.QueryContext(ctx, `SELECT id, user_id, title, content, channel, status, sent_at, created_at, updated_at FROM notification WHERE user_id = $1`, userId)
 	if err != nil {
 		return nil, err
 	}
